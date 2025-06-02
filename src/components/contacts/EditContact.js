@@ -1,50 +1,58 @@
-import React, { Component } from 'react';
-import { Consumer } from '../../context';
+import React, { useState, useEffect, useContext } from 'react';
+import { Context } from '../../context';
 import TextInputGroup from '../layout/TextInputGroup';
 import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
 
-class EditContact extends Component {
-  state = {
-    name: '',
-    email: '',
-    phone: '',
-    errors: {}
+function EditContact(props) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const { dispatch } = useContext(Context);
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const res = await axios.get(
+          `https://jsonplaceholder.typicode.com/users/${id}`
+        );
+        const contact = res.data;
+        setName(contact.name);
+        setEmail(contact.email);
+        setPhone(contact.phone);
+      } catch (error) {
+        console.error("Error fetching contact:", error);
+        // Optionally navigate to not found or show error
+      }
+    };
+
+    fetchContact();
+  }, [id]); // Rerun effect if id changes
+
+  const onChange = e => {
+    const { name, value } = e.target;
+    if (name === 'name') setName(value);
+    if (name === 'email') setEmail(value);
+    if (name === 'phone') setPhone(value);
   };
 
-  async componentDidMount() {
-    const { id } = this.props.match.params;
-    const res = await axios.get(
-      `https://jsonplaceholder.typicode.com/users/${id}`
-    );
-    const contact = res.data;
-    this.setState({
-      name: contact.name,
-      email: contact.email,
-      phone: contact.phone
-    });
-  }
-
-  onChange = e => this.setState({ [e.target.name]: e.target.value });
-
-  onSubmit = async (dispatch, e) => {
+  const onSubmit = async e => {
     e.preventDefault();
-    const { name, email, phone } = this.state;
+
     if (name === '') {
-      this.setState({
-        errors: { name: 'Name is required' }
-      });
+      setErrors({ name: 'Name is required' });
       return;
     }
     if (email === '') {
-      this.setState({
-        errors: { email: 'Email is required' }
-      });
+      setErrors({ email: 'Email is required' });
       return;
     }
     if (phone === '') {
-      this.setState({
-        errors: { phone: 'Phone is required' }
-      });
+      setErrors({ phone: 'Phone is required' });
       return;
     }
 
@@ -54,74 +62,64 @@ class EditContact extends Component {
       phone
     };
 
-    const { id } = this.props.match.params;
+    try {
+      const res = await axios.put(
+        `https://jsonplaceholder.typicode.com/users/${id}`,
+        updContact
+      );
+      dispatch({ type: 'UPDATE_CONTACT', payload: res.data });
+    } catch (error) {
+      console.error("Error updating contact:", error);
+      // Optionally, you could dispatch an error action or set an error state
+    }
 
-    const res = await axios.put(
-      `https://jsonplaceholder.typicode.com/users/${id}`,
-      updContact
-    );
+    setName('');
+    setEmail('');
+    setPhone('');
+    setErrors({});
 
-    dispatch({ type: 'UPDATE_CONTACT', payload: res.data });
-
-    this.setState({
-      name: '',
-      email: '',
-      phone: '',
-      errors: {}
-    });
-
-    this.props.history.push('/');
+    navigate('/');
   };
 
-  render() {
-    const { name, email, phone, errors } = this.state;
-    return (
-      <Consumer>
-        {value => {
-          const { dispatch } = value;
-          return (
-            <div className="card mb-3">
-              <div className="card-header">Edit Contact</div>
-              <div className="card-body">
-                <form onSubmit={this.onSubmit.bind(this, dispatch)}>
-                  <TextInputGroup
-                    label="Name"
-                    name="name"
-                    placeholder="Enter Name..."
-                    value={name}
-                    onChange={this.onChange}
-                    error={errors.name}
-                  />
-                  <TextInputGroup
-                    label="Email"
-                    name="email"
-                    type="email"
-                    placeholder="Enter Email..."
-                    value={email}
-                    onChange={this.onChange}
-                    error={errors.email}
-                  />
-                  <TextInputGroup
-                    label="Phone"
-                    name="phone"
-                    placeholder="Enter Phone..."
-                    value={phone}
-                    onChange={this.onChange}
-                    error={errors.phone}
-                  />
-                  <input
-                    type="submit"
-                    value="Update Contact"
-                    className="btn btn-light btn-block"
-                  />
-                </form>
-              </div>
-            </div>
-          );
-        }}
-      </Consumer>
-    );
-  }
+  return (
+    <div className="card mb-3">
+      <div className="card-header">Edit Contact</div>
+      <div className="card-body">
+        <form onSubmit={onSubmit}>
+          <TextInputGroup
+            label="Name"
+            name="name"
+            placeholder="Enter Name..."
+            value={name}
+            onChange={onChange}
+            error={errors.name}
+          />
+          <TextInputGroup
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="Enter Email..."
+            value={email}
+            onChange={onChange}
+            error={errors.email}
+          />
+          <TextInputGroup
+            label="Phone"
+            name="phone"
+            placeholder="Enter Phone..."
+            value={phone}
+            onChange={onChange}
+            error={errors.phone}
+          />
+          <input
+            type="submit"
+            value="Update Contact"
+            className="btn btn-light btn-block"
+          />
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default EditContact;

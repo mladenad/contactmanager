@@ -1,9 +1,15 @@
-import React, { Component } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import axios from 'axios';
 
 const Context = React.createContext();
-const reduser = (state, action) => {
+
+const reducer = (state, action) => {
   switch (action.type) {
+    case 'SET_CONTACTS':
+      return {
+        ...state,
+        contacts: action.payload
+      };
     case 'DELETE_CONTACT':
       return {
         ...state,
@@ -21,7 +27,7 @@ const reduser = (state, action) => {
         ...state,
         contacts: state.contacts.map(contact =>
           contact.id === action.payload.id
-            ? (contact = action.payload)
+            ? action.payload // Corrected update logic
             : contact
         )
       };
@@ -30,24 +36,33 @@ const reduser = (state, action) => {
   }
 };
 
-export class Provider extends Component {
-  state = {
-    contacts: [],
-    dispatch: action => this.setState(state => reduser(state, action))
-  };
+const initialState = {
+  contacts: []
+  // dispatch is automatically provided by useReducer
+};
 
-  async componentDidMount() {
-    const res = await axios.get('https://jsonplaceholder.typicode.com/users');
-    this.setState({ contacts: res.data });
-  }
+export function Provider(props) {
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  render() {
-    return (
-      <Context.Provider value={this.state}>
-        {this.props.children}
-      </Context.Provider>
-    );
-  }
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const res = await axios.get('https://jsonplaceholder.typicode.com/users');
+        dispatch({ type: 'SET_CONTACTS', payload: res.data });
+      } catch (error) {
+        console.error("Error fetching contacts:", error);
+        // Optionally dispatch an error action or set an error state
+      }
+    };
+
+    fetchContacts();
+  }, []); // Empty dependency array ensures this runs once on mount
+
+  return (
+    <Context.Provider value={{ contacts: state.contacts, dispatch }}>
+      {props.children}
+    </Context.Provider>
+  );
 }
 
 export const Consumer = Context.Consumer;
