@@ -65,4 +65,5 @@ export function Provider(props) {
   );
 }
 
+export { Context };
 export const Consumer = Context.Consumer;
