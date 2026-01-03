@@ -23,35 +23,108 @@ function Contact(props) {
   };
 
   return (
-    <div className="card card-body mb-3">
-      <h4>
-        {name}{' '}
-        <i
-          className="fas fa-sort-down"
-          style={{ cursor: 'pointer' }}
-          onClick={() => setShowContactInfo(!showContactInfo)}
-        />
-        <i
-          className="fas fa-times"
-          style={{ cursor: 'pointer', float: 'right', color: 'red' }}
-          onClick={() => onDeleteClick(id, dispatch)}
-        />
-        <Link to={`contact/edit/${id}`}>
+    <div className="card card-body mb-3 contact-card" style={{
+      borderLeft: '4px solid #1e3a8a',
+      transition: 'all 0.3s ease'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h4 style={{
+          margin: 0,
+          color: '#1e293b',
+          fontWeight: '600',
+          fontSize: '1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem'
+        }}>
+          <i className="fas fa-user-circle" style={{ color: '#3b82f6', fontSize: '1.5rem' }}></i>
+          {name}
           <i
-            className="fas fa-pencil-alt"
+            className="fas fa-chevron-down"
             style={{
               cursor: 'pointer',
-              float: 'right',
-              color: 'black',
-              marginRight: '1rem'
+              color: '#64748b',
+              fontSize: '0.875rem',
+              marginLeft: '0.5rem',
+              transition: 'all 0.2s ease',
+              transform: showContactInfo ? 'rotate(180deg)' : 'rotate(0deg)'
             }}
+            onClick={() => setShowContactInfo(!showContactInfo)}
           />
-        </Link>
-      </h4>
+        </h4>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <Link to={`contact/edit/${id}`} style={{ textDecoration: 'none' }}>
+            <i
+              className="fas fa-edit"
+              style={{
+                cursor: 'pointer',
+                color: '#1e3a8a',
+                fontSize: '1.125rem',
+                padding: '0.5rem',
+                borderRadius: '6px',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#f1f5f9';
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              title="Edit Contact"
+            />
+          </Link>
+          <i
+            className="fas fa-trash-alt"
+            style={{
+              cursor: 'pointer',
+              color: '#ef4444',
+              fontSize: '1.125rem',
+              padding: '0.5rem',
+              borderRadius: '6px',
+              transition: 'all 0.2s ease'
+            }}
+            onClick={() => onDeleteClick(id, dispatch)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#fef2f2';
+              e.currentTarget.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+            title="Delete Contact"
+          />
+        </div>
+      </div>
       {showContactInfo ? (
-        <ul className="list-group">
-          <li className="list-group-item">Email: {email}</li>
-          <li className="list-group-item">Phone: {phone}</li>
+        <ul className="list-group" style={{ marginTop: '1rem' }}>
+          <li className="list-group-item" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: '8px',
+            marginBottom: '0.5rem'
+          }}>
+            <i className="fas fa-envelope" style={{ color: '#3b82f6', width: '1.25rem' }}></i>
+            <strong style={{ color: '#64748b', minWidth: '60px' }}>Email:</strong>
+            <span style={{ color: '#1e293b' }}>{email}</span>
+          </li>
+          <li className="list-group-item" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: '8px'
+          }}>
+            <i className="fas fa-phone" style={{ color: '#3b82f6', width: '1.25rem' }}></i>
+            <strong style={{ color: '#64748b', minWidth: '60px' }}>Phone:</strong>
+            <span style={{ color: '#1e293b' }}>{phone}</span>
+          </li>
         </ul>
       ) : null}
     </div>

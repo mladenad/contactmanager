@@ -65,9 +65,28 @@ function AddContact(props) {
   };
 
   return (
-    <div className="card mb-3">
-      <div className="card-header">Add Contact</div>
-      <div className="card-body">
+    <div className="card mb-3" style={{
+      maxWidth: '800px',
+      margin: '0 auto',
+      borderRadius: '12px',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+    }}>
+      <div className="card-header" style={{
+        background: 'linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%)',
+        color: 'white',
+        padding: '1.5rem',
+        fontSize: '1.5rem',
+        fontWeight: '700',
+        borderTopLeftRadius: '12px',
+        borderTopRightRadius: '12px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.75rem'
+      }}>
+        <i className="fas fa-user-plus" style={{ color: '#3b82f6' }}></i>
+        Add New Contact
+      </div>
+      <div className="card-body" style={{ padding: '2rem' }}>
         <form onSubmit={onSubmit}>
           <TextInputGroup
             label="Name"
@@ -97,7 +116,29 @@ function AddContact(props) {
           <input
             type="submit"
             value="Add Contact"
-            className="btn btn-light btn-block"
+            className="btn btn-primary"
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              fontSize: '1rem',
+              fontWeight: '600',
+              background: '#1e3a8a',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              marginTop: '1rem'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#1e293b';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#1e3a8a';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           />
         </form>
       </div>
